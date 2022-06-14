@@ -1,33 +1,27 @@
 import 'package:flutter/cupertino.dart';
+import 'package:nav_20_nesmin_ganderwa/constants/variables.dart';
 import 'package:nav_20_nesmin_ganderwa/routes/ui_pages.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-enum PageState {
-  none,
-  addPage,
-  addAll,
-  addWidget,
-  pop,
-  replace,
-  replaceAll
-}
+enum PageState { none, addPage, addAll, addWidget, pop, replace, replaceAll }
 
 class PageAction {
   PageState state;
-  PageConfiguration page;
-  List<PageConfiguration> pages;
-  Widget widget;
+  PageConfiguration? page;
+  List<PageConfiguration>? pages;
+  Widget? widget;
 
-  PageAction({this.state = PageState.none, this.page = null, this.pages = null, this.widget = null});
+  PageAction({this.state = PageState.none, this.page, this.pages, this.widget});
 }
 
 class AppState extends ChangeNotifier {
   bool _loggedIn = false;
-  bool get loggedIn  => _loggedIn;
+  bool get loggedIn => _loggedIn;
   bool _splashFinished = false;
   bool get splashFinished => _splashFinished;
   final cartItems = [];
-  String emailAddress;
-  String password;
+  String emailAddress = '';
+  String password = '';
   PageAction _currentAction = PageAction();
   PageAction get currentAction => _currentAction;
   set currentAction(PageAction action) {
@@ -61,9 +55,11 @@ class AppState extends ChangeNotifier {
   void setsplashFinished() {
     _splashFinished = true;
     if (_loggedIn) {
-      _currentAction = PageAction(state: PageState.replaceAll, page: listItemsPageConfig);
+      _currentAction =
+          PageAction(state: PageState.replaceAll, page: listItemsPageConfig);
     } else {
-      _currentAction = PageAction(state: PageState.replaceAll, page: loginPageConfig);
+      _currentAction =
+          PageAction(state: PageState.replaceAll, page: loginPageConfig);
     }
     notifyListeners();
   }
@@ -71,27 +67,26 @@ class AppState extends ChangeNotifier {
   void login() {
     _loggedIn = true;
     saveLoginState(loggedIn);
-    _currentAction = PageAction(state: PageState.replaceAll, page: listItemsPageConfig);
+    _currentAction =
+        PageAction(state: PageState.replaceAll, page: listItemsPageConfig);
     notifyListeners();
   }
 
   void logout() {
     _loggedIn = false;
     saveLoginState(loggedIn);
-    _currentAction = PageAction(state: PageState.replaceAll, page: loginPageConfig);
+    _currentAction =
+        PageAction(state: PageState.replaceAll, page: loginPageConfig);
     notifyListeners();
   }
 
   void saveLoginState(bool loggedIn) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setBool(LoggedInKey, loggedIn);
+    prefs.setBool(keyLoggedIn, loggedIn);
   }
 
   void getLoggedInState() async {
     final prefs = await SharedPreferences.getInstance();
-    _loggedIn = prefs.getBool(LoggedInKey);
-    if (_loggedIn == null) {
-      _loggedIn = false;
-    }
+    _loggedIn = prefs.getBool(keyLoggedIn) ?? false;
   }
 }

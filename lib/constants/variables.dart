@@ -1,0 +1,1 @@
+const String keyLoggedIn = 'logged_in';
